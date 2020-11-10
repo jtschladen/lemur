@@ -86,6 +86,14 @@ def get_eligible_certificates(exclude=None):
         for notification, items in groupby(notification_groups, lambda x: x[0].label):
             certificates[owner][notification] = list(items)
 
+            """
+            current:
+            [owner, [notification, [certs]]]
+            
+            group by:
+            [owner, [
+            """
+
     return certificates
 
 
@@ -137,13 +145,20 @@ def send_expiration_notifications(exclude):
     # security team gets all
     security_email = current_app.config.get("LEMUR_SECURITY_TEAM_EMAIL")
 
+    current_app.logger.info(f"Sending expiration emails")  # TODO remove
+
     for owner, notification_group in get_eligible_certificates(exclude=exclude).items():
+
+        current_app.logger.info(f"Sending expiration emails to owner {owner}. Notifications: {notification_group}")  # TODO remove
 
         for notification_label, certificates in notification_group.items():
             notification_data = []
             security_data = []
 
             notification = certificates[0][0]
+
+            current_app.logger.info(f"Sending expiration emails to owner {owner} for notification {notification}. "
+                                    f"Certificates: {certificates}")  # TODO remove
 
             for data in certificates:
                 n, certificate = data
@@ -152,6 +167,10 @@ def send_expiration_notifications(exclude):
                 ).data
                 notification_data.append(cert_data)
                 security_data.append(cert_data)
+
+            current_app.logger.info(f"Sending expiration emails to owner {owner} for notification {notification}. "
+                                    f"Notification data:  {notification_data}"
+                                    f"Security data:  {security_data}")  # TODO remove
 
             if send_default_notification(
                     "expiration", notification_data, [owner], notification.options
@@ -162,6 +181,8 @@ def send_expiration_notifications(exclude):
 
             recipients = notification.plugin.filter_recipients(notification.options, security_email + [owner])
 
+            current_app.logger.info(f"Sending expiration emails to recipients {recipients} for notification {notification}. ")  # TODO remove
+
             if send_plugin_notification(
                 "expiration",
                 notification_data,
@@ -171,6 +192,8 @@ def send_expiration_notifications(exclude):
                 success += 1
             else:
                 failure += 1
+
+            current_app.logger.info(f"Sending expiration emails to security for notification {notification}. ")  # TODO remove
 
             if send_default_notification(
                 "expiration", security_data, security_email, notification.options
