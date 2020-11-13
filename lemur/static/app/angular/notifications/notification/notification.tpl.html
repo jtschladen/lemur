@@ -54,6 +54,12 @@
                 <input name="enableExpiration" ng-model="notification.enableExpirationNotifications" class="form-control" type="checkbox"
                 ng-click="notification.clearExpirationConfigurations(enableExpiration)">
             </div>
+            <div class="col-sm-9">
+                If selected, this will enable notifications when a certificate is about to expire.
+                <div ng-show="notification.enableExpirationNotifications">
+                    You must also configure the intervals at which these notifications will be sent.
+                </div>
+            </div>
         </div>
         <div class="form-group" ng-show="notification.enableExpirationNotifications">
           <label class="control-label col-sm-2">
@@ -95,13 +101,19 @@
             <div class="col-sm-1">
                 <input name="enableRotation" ng-model="notification.enableRotationNotifications" class="form-control" type="checkbox">
             </div>
+            <div class="col-sm-9">
+                If selected, this will enable notifications when a certificate is rotated.
+            </div>
         </div>
         <div class="form-group">
             <label class="control-label col-sm-2">
-                Enable pending certificate failure notifications
+                Enable rotation failure notifications
             </label>
             <div class="col-sm-1">
-                <input name="enablePendingCertFailure" ng-model="notification.enablePendingCertFailureNotifications" class="form-control" type="checkbox">
+                <input name="enableRotationFailure" ng-model="notification.enableRotationFailureNotifications" class="form-control" type="checkbox">
+            </div>
+            <div class="col-sm-9">
+                If selected, this will enable notifications when an automatic certificate rotation fails.
             </div>
         </div>
         <div class="form-group">
