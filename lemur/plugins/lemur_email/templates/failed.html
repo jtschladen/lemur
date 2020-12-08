@@ -2,19 +2,10 @@
 {% block subject %}
 Your certificate request has failed!
 {% endblock %}
-{% block header %}
-{% endblock %}
 {% block body %}
-                                        <table style="min-width:300px" border="0" cellspacing="0" cellpadding="0">
-                                            <tbody>
                                             <tr>
                                                 <td style="font-family:Roboto-Regular,Helvetica,Arial,sans-serif;font-size:13px;color:#202020;line-height:1.5">
-                                                    Hi,
                                                     <br>This is a Lemur certificate failure notice. We were unable to create or rotate your certificate. Please retry your request. The reason for the failure is listed below.
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td style="font-family:Roboto-Regular,Helvetica,Arial,sans-serif;font-size:13px;color:#202020;line-height:1.5">
                                                     <table border="0" cellspacing="0" cellpadding="0"
                                                            style="margin-top:48px;margin-bottom:48px">
                                                         <tbody>
@@ -39,25 +30,4 @@ Your certificate request has failed!
                                                     If you are having any trouble, please reach out to {{ ", ".join(message.certificates.security_email) }}.</span>
                                                 </td>
                                             </tr>
-                                            <tr>
-                                            </tr>
-                                            <tr>
-                                                <td style="font-family:Roboto-Regular,Helvetica,Arial,sans-serif;font-size:13px;color:#202020;line-height:1.5">
-                                                    <br>Best,<br><span class="il">Lemur</span>
-                                                </td>
-                                            </tr>
-                                            <tr height="16px"></tr>
-                                            <tr>
-                                                <td>
-                                                    <table style="font-family:Roboto-Regular,Helvetica,Arial,sans-serif;font-size:12px;color:#b9b9b9;line-height:1.5">
-                                                        <tbody>
-                                                        <tr>
-                                                            <td>*All times are in UTC<br></td>
-                                                        </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
 {% endblock %}
