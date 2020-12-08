@@ -25,6 +25,9 @@ class Notification(db.Model):
     options = Column(JSONType)
     active = Column(Boolean, default=True)
     plugin_name = Column(String(32))
+    enable_rotation = Column(Boolean, default=False)
+    expiration_intervals = Column(JSONType)  # TODO DB migration must fill this in
+    # TODO DB migration should disable all DEFAULT_SECURITY_X_DAY notifications
     certificates = relationship(
         "Certificate",
         secondary=certificate_notification_associations,

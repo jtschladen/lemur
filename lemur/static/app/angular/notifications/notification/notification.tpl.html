@@ -52,7 +52,7 @@
             </label>
             <div class="col-sm-1">
                 <input name="enableExpiration" ng-model="notification.enableExpirationNotifications" class="form-control" type="checkbox"
-                ng-click="notification.clearExpirationConfigurations(enableExpiration)">
+                ng-click="notification.clearExpirationIntervals(enableExpiration)">
             </div>
             <div class="col-sm-9">
                 If selected, this will enable notifications when a certificate is about to expire.
@@ -83,7 +83,7 @@
         <div class="form-group" ng-show="notification.enableExpirationNotifications">
             <div class="col-sm-10 col-sm-offset-2">
                 <table class="table">
-                    <tr ng-repeat="config in notification.expirationConfigurations track by $index">
+                    <tr ng-repeat="config in notification.expirationIntervals track by $index">
                         <td>{{ config.interval }} {{ config.unit }}</td>
                         <td>
                             <button type="button" ng-click="notification.removeExpirationConfig($index)"

@@ -14,22 +14,22 @@ angular.module('lemur')
           this.certificates.splice(index, 1);
         },
         attachExpirationConfig: function () {
-          if (this.expirationConfigurations === undefined) {
-            this.expirationConfigurations = [];
+          if (this.expirationIntervals === undefined) {
+            this.expirationIntervals = [];
           }
           if (angular.isNumber(this.notificationInterval) && angular.isString(this.notificationUnit)) {
-            this.expirationConfigurations.push({'interval': this.notificationInterval, 'unit': this.notificationUnit});
+            this.expirationIntervals.push({'interval': this.notificationInterval, 'unit': this.notificationUnit});
           }
 
           this.notificationInterval = null;
           this.notificationUnit = null;
         },
         removeExpirationConfig: function (index) {
-          this.expirationConfigurations.splice(index, 1);
+          this.expirationIntervals.splice(index, 1);
         },
-        clearExpirationConfigurations: function(enableExpiration) {
+        clearExpirationIntervals: function(enableExpiration) {
           if (!enableExpiration) {
-            this.expirationConfigurations = [];
+            this.expirationIntervals = [];
           }
         }
       });
