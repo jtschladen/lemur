@@ -51,18 +51,17 @@ class CertificateCreationSchema(CertificateSchema):
         if not data["notifications"]:
             data[
                 "notifications"
-            ] += notification_service.create_default_notifications(
-                data["owner"].split("@")[0].upper(),
-                [data["owner"]],
-            )
+            ].append(notification_service.create_default_notifications(
+                data["owner"].split("@")[0].upper(), [data["owner"]],
+            ))
 
             data[
                 "notifications"
-            ] += notification_service.create_default_notifications(
+            ].append(notification_service.create_default_notifications(
                 "SECURITY",
                 current_app.config.get("LEMUR_SECURITY_TEAM_EMAIL"),
                 current_app.config.get("LEMUR_SECURITY_TEAM_EMAIL_INTERVALS", None),
-            )
+            ))
         return data
 
 
@@ -225,9 +224,9 @@ class CertificateEditInputSchema(CertificateSchema):
 
             data[
                 "notifications"
-            ] += notification_service.create_default_notifications(
+            ].append(notification_service.create_default_notifications(
                 notification_name, [data["owner"]]
-            )
+            ))
 
         return data
 

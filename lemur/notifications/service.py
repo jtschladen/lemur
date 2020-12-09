@@ -30,7 +30,7 @@ def create_default_notifications(base_name, recipients, expiration_intervals=Non
     :return:
     """
     if not recipients:
-        return []
+        return None
 
     options = [
         {
@@ -51,7 +51,7 @@ def create_default_notifications(base_name, recipients, expiration_intervals=Non
     name = f"DEFAULT_{base_name}"
     existing = get_by_label(name)
     if existing:
-        return existing
+        return [existing]
 
     return create(
         label=name,

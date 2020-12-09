@@ -92,12 +92,12 @@ def test_send_expiration_notification(certificate, notification, notification_pl
     certificate.notifications[0].options = [
         {"name": "interval", "value": 10},
         {"name": "unit", "value": "days"},
+        {"name": "recipients", "value": "a@example.com,b@example.com"},
     ]
 
     delta = certificate.not_after - timedelta(days=10)
     with freeze_time(delta.datetime):
-        # TODO add notification and fix return value from this method
-        assert send_expiration_notifications([]) == (1, 0)
+        assert send_expiration_notifications([]) == (2, 0)
 
 
 @mock_ses
@@ -124,13 +124,46 @@ def test_send_rotation_notification(notification_plugin, notification, certifica
     from lemur.notifications.messaging import send_rotation_notification
     verify_sender_email()
 
+    notification.enable_rotation = True
+    notification.options = [
+        {"name": "interval", "value": 10},
+        {"name": "unit", "value": "days"},
+        {"name": "recipients", "value": "a@example.com,b@example.com"},
+    ]
     certificate.notifications.append(notification)
 
     assert send_rotation_notification(certificate)
 
 
 @mock_ses
+def test_send_rotation_notification_disabled(notification_plugin, notification, certificate):
+    from lemur.notifications.messaging import send_rotation_notification
+    verify_sender_email()
+
+    certificate.notifications.append(notification)
+
+    assert not send_rotation_notification(certificate)
+
+
+@mock_ses
 def test_send_rotation_failure_notification(notification_plugin, notification, certificate):
+    from lemur.notifications.messaging import send_rotation_failure_notification
+    verify_sender_email()
+
+    certificate.notifications.append(notification)
+    certificate.notifications[0].options = [
+        {"name": "interval", "value": 10},
+        {"name": "unit", "value": "days"},
+        {"name": "recipients", "value": "a@example.com,b@example.com"},
+    ]
+
+    delta = certificate.not_after - timedelta(days=7)
+    with freeze_time(delta.datetime):
+        assert send_rotation_failure_notification(certificate)
+
+
+@mock_ses
+def test_send_rotation_failure_notification_no_configured_notification(notification_plugin, notification, certificate):
     from lemur.notifications.messaging import send_rotation_failure_notification
     verify_sender_email()
 

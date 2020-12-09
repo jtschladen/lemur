@@ -95,9 +95,9 @@ class PendingCertificateEditInputSchema(PendingCertificateSchema):
             notification_name = data["owner"].split("@")[0].upper()
             data[
                 "notifications"
-            ] += notification_service.create_default_notifications(
+            ].append(notification_service.create_default_notifications(
                 notification_name, [data["owner"]]
-            )
+            ))
         return data
 
 

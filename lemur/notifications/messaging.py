@@ -155,7 +155,7 @@ def send_plugin_notification(event_type, data, recipients, notification):
         # If the notification we just sent was NOT email, then we may also need to send an email to any
         # additional recipients.
         if notification.plugin.slug != "email-notification":
-            if send_default_notification("expiration", data, recipients, notification.options):
+            if send_default_notification(event_type, data, recipients, notification.options):
                 status = SUCCESS_METRIC_STATUS
         else:
             status = SUCCESS_METRIC_STATUS

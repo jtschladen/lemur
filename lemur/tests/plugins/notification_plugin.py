@@ -1,4 +1,5 @@
 from lemur.plugins.bases import NotificationPlugin
+from lemur.plugins.utils import get_plugin_option
 
 
 class TestNotificationPlugin(NotificationPlugin):
@@ -15,3 +16,11 @@ class TestNotificationPlugin(NotificationPlugin):
     @staticmethod
     def send(notification_type, message, targets, options, **kwargs):
         return
+
+    @staticmethod
+    def get_recipients(options, additional_recipients, **kwargs):
+        notification_recipients = get_plugin_option("recipients", options)
+        if notification_recipients:
+            notification_recipients = notification_recipients.split(",")
+
+        return list(set(notification_recipients + additional_recipients))
