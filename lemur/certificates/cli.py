@@ -97,13 +97,12 @@ def validate_endpoint(endpoint_name):
         return endpoint
 
 
-def request_rotation(endpoint, certificate, message, commit):
+def request_rotation(endpoint, certificate, commit):
     """
     Rotates a certificate and handles any exceptions during
     execution.
     :param endpoint:
     :param certificate:
-    :param message:
     :param commit:
     :return:
     """
@@ -112,8 +111,7 @@ def request_rotation(endpoint, certificate, message, commit):
         try:
             deployment_service.rotate_certificate(endpoint, certificate)
 
-            if message:
-                send_rotation_notification(certificate)
+            send_rotation_notification(certificate)
 
             status = SUCCESS_METRIC_STATUS
 
@@ -184,13 +182,6 @@ def request_reissue(certificate, commit):
     help="Name of the certificate you wish to rotate.",
 )
 @manager.option(
-    "-a",
-    "--notify",
-    dest="message",
-    action="store_true",
-    help="Send a rotation notification to the certificates owner.",
-)
-@manager.option(
     "-c",
     "--commit",
     dest="commit",
@@ -198,7 +189,7 @@ def request_reissue(certificate, commit):
     default=False,
     help="Persist changes.",
 )
-def rotate(endpoint_name, new_certificate_name, old_certificate_name, message, commit):
+def rotate(endpoint_name, new_certificate_name, old_certificate_name, commit):
     """
     Rotates an endpoint and reissues it if it has not already been replaced. If it has
     been replaced, will use the replacement certificate for the rotation.
@@ -226,7 +217,7 @@ def rotate(endpoint_name, new_certificate_name, old_certificate_name, message, c
             log_data["message"] = "Rotating endpoint"
             log_data["endpoint"] = endpoint.dnsname
             log_data["certificate"] = new_cert.name
-            request_rotation(endpoint, new_cert, message, commit)
+            request_rotation(endpoint, new_cert, commit)
             current_app.logger.info(log_data)
 
         elif old_cert and new_cert:
@@ -239,7 +230,7 @@ def rotate(endpoint_name, new_certificate_name, old_certificate_name, message, c
             for endpoint in old_cert.endpoints:
                 print(f"[+] Rotating {endpoint.name}")
                 log_data["endpoint"] = endpoint.dnsname
-                request_rotation(endpoint, new_cert, message, commit)
+                request_rotation(endpoint, new_cert, commit)
                 current_app.logger.info(log_data)
 
         else:
@@ -253,7 +244,7 @@ def rotate(endpoint_name, new_certificate_name, old_certificate_name, message, c
                     )
                     log_data["certificate"] = endpoint.certificate.replaced[0].name
                     request_rotation(
-                        endpoint, endpoint.certificate.replaced[0], message, commit
+                        endpoint, endpoint.certificate.replaced[0], commit
                     )
                     current_app.logger.info(log_data)
 
@@ -271,7 +262,6 @@ def rotate(endpoint_name, new_certificate_name, old_certificate_name, message, c
                                 endpoint.certificate.replaced[0].name
                             ),
                             "endpoint_name": str(endpoint.name),
-                            "message": str(message),
                         },
                     )
                     print(
@@ -288,7 +278,6 @@ def rotate(endpoint_name, new_certificate_name, old_certificate_name, message, c
                 "old_certificate_name": str(old_certificate_name),
                 "new_certificate_name": str(new_certificate_name),
                 "endpoint_name": str(endpoint_name),
-                "message": str(message),
             }
         )
 
@@ -301,16 +290,15 @@ def rotate(endpoint_name, new_certificate_name, old_certificate_name, message, c
             "old_certificate_name": str(old_certificate_name),
             "new_certificate_name": str(new_certificate_name),
             "endpoint_name": str(endpoint_name),
-            "message": str(message),
             "endpoint": str(globals().get("endpoint")),
         },
     )
 
 
-def request_rotation_region(endpoint, new_cert, message, commit, log_data, region):
+def request_rotation_region(endpoint, new_cert, commit, log_data, region):
     if region in endpoint.dnsname:
         log_data["message"] = "Rotating endpoint in region"
-        request_rotation(endpoint, new_cert, message, commit)
+        request_rotation(endpoint, new_cert, commit)
     else:
         log_data["message"] = "Skipping rotation, region mismatch"
 
@@ -337,13 +325,6 @@ def request_rotation_region(endpoint, new_cert, message, commit, log_data, regio
     help="Name of the certificate you wish to rotate.",
 )
 @manager.option(
-    "-a",
-    "--notify",
-    dest="message",
-    action="store_true",
-    help="Send a rotation notification to the certificates owner.",
-)
-@manager.option(
     "-c",
     "--commit",
     dest="commit",
@@ -358,14 +339,13 @@ def request_rotation_region(endpoint, new_cert, message, commit, log_data, regio
     required=True,
     help="Region in which to rotate the endpoint.",
 )
-def rotate_region(endpoint_name, new_certificate_name, old_certificate_name, message, commit, region):
+def rotate_region(endpoint_name, new_certificate_name, old_certificate_name, commit, region):
     """
     Rotates an endpoint in a defined region it if it has not already been replaced. If it has
     been replaced, will use the replacement certificate for the rotation.
     :param old_certificate_name: Name of the certificate you wish to rotate.
     :param new_certificate_name: Name of the certificate you wish to rotate to.
     :param endpoint_name: Name of the endpoint you wish to rotate.
-    :param message: Send a rotation notification to the certificates owner.
     :param commit: Persist changes.
     :param region: Region in which to rotate the endpoint.
     """
@@ -388,7 +368,7 @@ def rotate_region(endpoint_name, new_certificate_name, old_certificate_name, mes
         if endpoint and new_cert:
             log_data["endpoint"] = endpoint.dnsname
             log_data["certificate"] = new_cert.name
-            request_rotation_region(endpoint, new_cert, message, commit, log_data, region)
+            request_rotation_region(endpoint, new_cert, commit, log_data, region)
 
         elif old_cert and new_cert:
             log_data["certificate"] = new_cert.name
@@ -398,7 +378,7 @@ def rotate_region(endpoint_name, new_certificate_name, old_certificate_name, mes
             current_app.logger.info(log_data)
             for endpoint in old_cert.endpoints:
                 log_data["endpoint"] = endpoint.dnsname
-                request_rotation_region(endpoint, new_cert, message, commit, log_data, region)
+                request_rotation_region(endpoint, new_cert, commit, log_data, region)
 
         else:
             log_data["message"] = "Rotating all endpoints that have new certificates available"
@@ -428,7 +408,7 @@ def rotate_region(endpoint_name, new_certificate_name, old_certificate_name, mes
                     log_data["message"] = "Rotating all endpoints in region"
                     print(log_data)
                     current_app.logger.info(log_data)
-                    request_rotation(endpoint, endpoint.certificate.replaced[0], message, commit)
+                    request_rotation(endpoint, endpoint.certificate.replaced[0], commit)
                     status = SUCCESS_METRIC_STATUS
                 else:
                     status = FAILURE_METRIC_STATUS
@@ -445,7 +425,6 @@ def rotate_region(endpoint_name, new_certificate_name, old_certificate_name, mes
                         "old_certificate_name": str(old_cert),
                         "new_certificate_name": str(endpoint.certificate.replaced[0].name),
                         "endpoint_name": str(endpoint.dnsname),
-                        "message": str(message),
                         "region": str(region),
                     },
                 )
@@ -458,7 +437,6 @@ def rotate_region(endpoint_name, new_certificate_name, old_certificate_name, mes
                 "old_certificate_name": str(old_certificate_name),
                 "new_certificate_name": str(new_certificate_name),
                 "endpoint": str(endpoint_name),
-                "message": str(message),
                 "region": str(region),
             }
         )
@@ -472,7 +450,6 @@ def rotate_region(endpoint_name, new_certificate_name, old_certificate_name, mes
             "old_certificate_name": str(old_certificate_name),
             "new_certificate_name": str(new_certificate_name),
             "endpoint_name": str(endpoint_name),
-            "message": str(message),
             "endpoint": str(globals().get("endpoint")),
             "region": str(region),
         },

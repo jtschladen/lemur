@@ -114,8 +114,6 @@ class EmailNotificationPlugin(ExpirationNotificationPlugin):
 
         s_type = current_app.config.get("LEMUR_EMAIL_SENDER", "ses").lower()
 
-        current_app.logger.info(f"Sending email to targets {targets}")  # TODO remove
-
         if s_type == "ses":
             send_via_ses(subject, body, targets)
 

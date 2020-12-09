@@ -15,9 +15,9 @@ def verify_sender_email():
 
 
 def test_needs_notification(app, certificate, notification):
-    from lemur.notifications.messaging import needs_notification
+    from lemur.notifications.messaging import needs_expiration_notification
 
-    assert not needs_notification(certificate)
+    assert not needs_expiration_notification(certificate)
 
     with pytest.raises(Exception):
         notification.options = [
@@ -25,17 +25,17 @@ def test_needs_notification(app, certificate, notification):
             {"name": "unit", "value": "min"},
         ]
         certificate.notifications.append(notification)
-        needs_notification(certificate)
+        needs_expiration_notification(certificate)
 
     certificate.notifications[0].options = [
         {"name": "interval", "value": 10},
         {"name": "unit", "value": "days"},
     ]
-    assert not needs_notification(certificate)
+    assert not needs_expiration_notification(certificate)
 
     delta = certificate.not_after - timedelta(days=10)
     with freeze_time(delta.datetime):
-        assert needs_notification(certificate)
+        assert needs_expiration_notification(certificate)
 
 
 def test_get_certificates(app, certificate, notification):
@@ -79,7 +79,7 @@ def test_get_eligible_certificates(app, certificate, notification):
     delta = certificate.not_after - timedelta(days=10)
     with freeze_time(delta.datetime):
         assert get_eligible_certificates() == {
-            certificate.owner: {notification.label: [(notification, certificate)]}
+            notification: [certificate]
         }
 
 
@@ -96,9 +96,8 @@ def test_send_expiration_notification(certificate, notification, notification_pl
 
     delta = certificate.not_after - timedelta(days=10)
     with freeze_time(delta.datetime):
-        # this will only send owner and security emails (no additional recipients),
-        # but it executes 3 successful send attempts
-        assert send_expiration_notifications([]) == (3, 0)
+        # TODO add notification and fix return value from this method
+        assert send_expiration_notifications([]) == (1, 0)
 
 
 @mock_ses
@@ -113,11 +112,36 @@ def test_send_expiration_notification_with_no_notifications(
 
 
 @mock_ses
-def test_send_rotation_notification(notification_plugin, certificate):
+def test_send_revocation_notification(notification_plugin, certificate):
+    from lemur.notifications.messaging import send_revocation_notification
+    verify_sender_email()
+
+    assert send_revocation_notification(certificate)
+
+
+@mock_ses
+def test_send_rotation_notification(notification_plugin, notification, certificate):
     from lemur.notifications.messaging import send_rotation_notification
     verify_sender_email()
 
+    certificate.notifications.append(notification)
+
     assert send_rotation_notification(certificate)
+
+
+@mock_ses
+def test_send_rotation_failure_notification(notification_plugin, notification, certificate):
+    from lemur.notifications.messaging import send_rotation_failure_notification
+    verify_sender_email()
+
+    # we don't actually need a notification here, but if we don't include one then the time zone on the cert's
+    # not_after won't be set and we'll throw an exception trying to check if it's 7 days away
+    # TODO is there a better way to fix that behavior?
+    certificate.notifications.append(notification)
+
+    delta = certificate.not_after - timedelta(days=7)
+    with freeze_time(delta.datetime):
+        assert send_rotation_failure_notification(certificate)
 
 
 @mock_ses

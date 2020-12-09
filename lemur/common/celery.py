@@ -303,9 +303,7 @@ def fetch_acme_cert(id):
 
             if pending_cert.number_attempts > 4:
                 error_log["message"] = "Deleting pending certificate"
-                send_pending_failure_notification(
-                    pending_cert, notify_owner=pending_cert.notify
-                )
+                send_pending_failure_notification(pending_cert)
                 # Mark the pending cert as resolved
                 pending_certificate_service.update(
                     cert.get("pending_cert").id, resolved=True
@@ -656,12 +654,11 @@ def certificate_rotate(**kwargs):
 
     current_app.logger.debug(log_data)
     try:
-        notify = current_app.config.get("ENABLE_ROTATION_NOTIFICATION", None)
         if region:
             log_data["region"] = region
-            cli_certificate.rotate_region(None, None, None, notify, True, region)
+            cli_certificate.rotate_region(None, None, None, True, region)
         else:
-            cli_certificate.rotate(None, None, None, notify, True)
+            cli_certificate.rotate(None, None, None, True)
     except SoftTimeLimitExceeded:
         log_data["message"] = "Certificate rotate: Time limit exceeded."
         current_app.logger.error(log_data)

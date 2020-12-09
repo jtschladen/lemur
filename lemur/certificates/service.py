@@ -24,6 +24,7 @@ from lemur.domains.models import Domain
 from lemur.endpoints import service as endpoint_service
 from lemur.extensions import metrics, sentry, signals
 from lemur.models import certificate_associations
+from lemur.notifications.messaging import send_revocation_notification
 from lemur.notifications.models import Notification
 from lemur.pending_certificates.models import PendingCertificate
 from lemur.plugins.base import plugins
@@ -862,6 +863,7 @@ def cleanup_after_revoke(certificate):
             sentry.captureException()
             error_message = error_message + f"Failed to remove destination: {destination.label}. {str(e)}. "
 
+    send_revocation_notification(certificate)
     database.update(certificate)
     return error_message
 

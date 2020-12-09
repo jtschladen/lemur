@@ -16,29 +16,23 @@ from lemur.common.utils import truthiness
 from lemur.notifications.models import Notification
 
 
-def create_default_expiration_notifications(name, recipients, intervals=None):
+def create_default_notifications(base_name, recipients, expiration_intervals=None):
     """
-    Will create standard 30, 10 and 2 day notifications for a given owner unless an alternate set of
-    intervals is supplied. If standard notifications already exist these will be returned instead of
-    new notifications.
+    Will create standard notifications for a given owner. By default, the notification types are set as follows:
+     - Expiration: 30, 10 and 2 days (unless an alternate set of intervals is supplied)
+     - Rotation success: disabled
 
-    :param name:
+    If standard notifications already exist these will be returned instead of new notifications.
+
+    :param base_name:
     :param recipients:
+    :param expiration_intervals:
     :return:
     """
     if not recipients:
         return []
 
     options = [
-        {
-            "name": "unit",
-            "type": "select",
-            "required": True,
-            "validation": "",
-            "available": ["days", "weeks", "months"],
-            "helpMessage": "Interval unit",
-            "value": "days",
-        },
         {
             "name": "recipients",
             "type": "str",
@@ -49,56 +43,47 @@ def create_default_expiration_notifications(name, recipients, intervals=None):
         },
     ]
 
-    if intervals is None:
-        intervals = current_app.config.get(
+    if expiration_intervals is None:
+        expiration_intervals = current_app.config.get(
             "LEMUR_DEFAULT_EXPIRATION_NOTIFICATION_INTERVALS", [30, 15, 2]
         )
 
-    notifications = []
-    for i in intervals:
-        n = get_by_label("{name}_{interval}_DAY".format(name=name, interval=i))
-        if not n:
-            inter = [
-                {
-                    "name": "interval",
-                    "type": "int",
-                    "required": True,
-                    "validation": r"^\d+$",
-                    "helpMessage": "Number of days to be alert before expiration.",
-                    "value": i,
-                }
-            ]
-            inter.extend(options)
-            n = create(
-                label="{name}_{interval}_DAY".format(name=name, interval=i),
-                plugin_name=current_app.config.get(
-                    "LEMUR_DEFAULT_NOTIFICATION_PLUGIN", "email-notification"
-                ),
-                options=list(inter),
-                description="Default {interval} day expiration notification".format(
-                    interval=i
-                ),
-                certificates=[],
-            )
-        notifications.append(n)
+    name = f"DEFAULT_{base_name}"
+    existing = get_by_label(name)
+    if existing:
+        return existing
 
-    return notifications
+    return create(
+        label=name,
+        plugin_name=current_app.config.get(
+            "LEMUR_DEFAULT_NOTIFICATION_PLUGIN", "email-notification"
+        ),
+        options=list(options),
+        expiration_intervals=list(expiration_intervals),  # TODO format?
+        description=f"Default notification for {name}",
+        certificates=[],
+    )
 
 
-def create(label, plugin_name, options, description, certificates):
+def create(label, plugin_name, options, expiration_intervals, description, certificates):
     """
     Creates a new notification.
 
     :param label: Notification label
     :param plugin_name:
     :param options:
+    :param expiration_intervals:
     :param description:
     :param certificates:
     :rtype : Notification
     :return:
     """
     notification = Notification(
-        label=label, options=options, plugin_name=plugin_name, description=description
+        label=label,
+        options=options,
+        expiration_intervals=expiration_intervals,
+        plugin_name=plugin_name,
+        description=description
     )
     notification.certificates = certificates
     return database.create(notification)

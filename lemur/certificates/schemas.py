@@ -51,15 +51,15 @@ class CertificateCreationSchema(CertificateSchema):
         if not data["notifications"]:
             data[
                 "notifications"
-            ] += notification_service.create_default_expiration_notifications(
-                "DEFAULT_{0}".format(data["owner"].split("@")[0].upper()),
+            ] += notification_service.create_default_notifications(
+                data["owner"].split("@")[0].upper(),
                 [data["owner"]],
             )
 
             data[
                 "notifications"
-            ] += notification_service.create_default_expiration_notifications(
-                "DEFAULT_SECURITY",
+            ] += notification_service.create_default_notifications(
+                "SECURITY",
                 current_app.config.get("LEMUR_SECURITY_TEAM_EMAIL"),
                 current_app.config.get("LEMUR_SECURITY_TEAM_EMAIL_INTERVALS", None),
             )
@@ -216,9 +216,7 @@ class CertificateEditInputSchema(CertificateSchema):
         :return:
         """
         if data.get("owner"):
-            notification_name = "DEFAULT_{0}".format(
-                data["owner"].split("@")[0].upper()
-            )
+            notification_name = data["owner"].split("@")[0].upper()
 
             # Even if one default role exists, return
             # This allows a User to remove unwanted default notification for current owner
@@ -227,7 +225,7 @@ class CertificateEditInputSchema(CertificateSchema):
 
             data[
                 "notifications"
-            ] += notification_service.create_default_expiration_notifications(
+            ] += notification_service.create_default_notifications(
                 notification_name, [data["owner"]]
             )
 

@@ -92,12 +92,10 @@ class PendingCertificateEditInputSchema(PendingCertificateSchema):
         :return:
         """
         if data["owner"]:
-            notification_name = "DEFAULT_{0}".format(
-                data["owner"].split("@")[0].upper()
-            )
+            notification_name = data["owner"].split("@")[0].upper()
             data[
                 "notifications"
-            ] += notification_service.create_default_expiration_notifications(
+            ] += notification_service.create_default_notifications(
                 notification_name, [data["owner"]]
             )
         return data

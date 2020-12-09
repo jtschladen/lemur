@@ -478,16 +478,3 @@ def update_destinations(target, value, initiator):
             "destination": value.label,
         },
     )
-
-
-@event.listens_for(Certificate.replaces, "append")
-def update_replacement(target, value, initiator):
-    """
-    When a certificate is marked as 'replaced' we should not notify.
-
-    :param target:
-    :param value:
-    :param initiator:
-    :return:
-    """
-    value.notify = False

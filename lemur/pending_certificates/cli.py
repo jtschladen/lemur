@@ -109,9 +109,7 @@ def fetch_all_acme():
 
             if pending_cert.number_attempts > 4:
                 error_log["message"] = "Marking pending certificate as resolved"
-                send_pending_failure_notification(
-                    pending_cert, notify_owner=pending_cert.notify
-                )
+                send_pending_failure_notification(pending_cert)
                 # Mark "resolved" as True
                 pending_certificate_service.update(cert.id, resolved=True)
             else:

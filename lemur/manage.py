@@ -271,8 +271,8 @@ class InitializeApp(Command):
                 recipients
             )
         )
-        notification_service.create_default_expiration_notifications(
-            "DEFAULT_SECURITY", recipients=recipients
+        notification_service.create_default_notifications(
+            "SECURITY", recipients=recipients
         )
 
         _DEFAULT_ROTATION_INTERVAL = "default"
