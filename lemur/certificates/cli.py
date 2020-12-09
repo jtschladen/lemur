@@ -33,7 +33,7 @@ from lemur.deployment import service as deployment_service
 from lemur.domains.models import Domain
 from lemur.endpoints import service as endpoint_service
 from lemur.extensions import sentry, metrics
-from lemur.notifications.messaging import send_rotation_notification
+from lemur.notifications.messaging import send_rotation_notification, send_rotation_failure_notification
 from lemur.plugins.base import plugins
 
 manager = Manager(usage="Handles all certificate related tasks.")
@@ -121,6 +121,7 @@ def request_rotation(endpoint, certificate, commit):
                     endpoint.name, certificate.name, e
                 )
             )
+            send_rotation_failure_notification(certificate)
 
     metrics.send("endpoint_rotation", "counter", 1, metric_tags={"status": status})
 
