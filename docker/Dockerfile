@@ -1,4 +1,4 @@
-FROM alpine:3.8
+FROM alpine:3.12
 
 ARG VERSION
 ENV VERSION master
@@ -12,7 +12,7 @@ ENV group lemur
 
 RUN addgroup -S ${group} -g ${gid} && \
     adduser -D -S ${user} -G ${group} -u ${uid} && \
-    apk --update add python3 libldap postgresql-client nginx supervisor curl tzdata openssl bash && \
+    apk --update add python3 libldap postgresql-client nginx supervisor curl tzdata openssl bash cmd:pip3 && \
     apk --update add --virtual build-dependencies \
                 git \
                 tar \

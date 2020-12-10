@@ -35,8 +35,8 @@ fi
 # echo "Done"
 # fi
 
-echo " # Running init"
-su lemur -s /bin/bash -c "cd /opt/lemur/lemur; lemur init -p ${LEMUR_ADMIN_PASSWORD}"
+echo " # NOT Running init"
+#su lemur -s /bin/bash -c "cd /opt/lemur/lemur; lemur init -p ${LEMUR_ADMIN_PASSWORD}"
 echo " # Done"
 
 # echo "Creating user"
