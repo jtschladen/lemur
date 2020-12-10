@@ -1,7 +1,6 @@
 FROM alpine:3.12
 
 ARG VERSION
-ENV VERSION master
 
 ARG URLCONTEXT
 
@@ -9,6 +8,8 @@ ENV uid 1337
 ENV gid 1337
 ENV user lemur
 ENV group lemur
+
+COPY ./ /opt/lemur
 
 RUN addgroup -S ${group} -g ${gid} && \
     adduser -D -S ${user} -G ${group} -u ${uid} && \
@@ -37,7 +38,8 @@ RUN addgroup -S ${group} -g ${gid} && \
     pip3 install --upgrade pip && \
     pip3 install --upgrade setuptools && \
     mkdir -p /run/nginx/ /etc/nginx/ssl/ && \
-    chown -R $user:$group /opt/lemur/ /home/lemur/.lemur/
+    chown -R $user:$group /opt/lemur/ /home/lemur/.lemur/ && \
+    ls -ltra /opt/lemur
     
 WORKDIR /opt/lemur
 
@@ -47,11 +49,11 @@ RUN npm install --unsafe-perm && \
     node_modules/.bin/gulp package --urlContextPath=${URLCONTEXT} && \
     apk del build-dependencies
 
-COPY entrypoint /
-COPY src/lemur.conf.py /home/lemur/.lemur/lemur.conf.py
-COPY supervisor.conf /
-COPY nginx/default.conf /etc/nginx/conf.d/
-COPY nginx/default-ssl.conf /etc/nginx/conf.d/
+COPY docker/entrypoint /
+COPY docker/src/lemur.conf.py /home/lemur/.lemur/lemur.conf.py
+COPY docker/supervisor.conf /
+COPY docker/nginx/default.conf /etc/nginx/conf.d/
+COPY docker/nginx/default-ssl.conf /etc/nginx/conf.d/
 
 RUN chmod +x /entrypoint
 WORKDIR /
