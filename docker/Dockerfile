@@ -34,7 +34,6 @@ RUN addgroup -S ${group} -g ${gid} && \
                 cyrus-sasl-dev \
                 openldap-dev && \
     mkdir -p /opt/lemur /home/lemur/.lemur/ && \
-    curl -sSL https://github.com/Netflix/lemur/archive/$VERSION.tar.gz | tar xz -C /opt/lemur --strip-components=1 && \
     pip3 install --upgrade pip && \
     pip3 install --upgrade setuptools && \
     mkdir -p /run/nginx/ /etc/nginx/ssl/ && \

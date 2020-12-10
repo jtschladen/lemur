@@ -21,6 +21,7 @@ PGPASSWORD=$POSTGRES_PASSWORD psql -h $POSTGRES_HOST -p $POSTGRES_PORT -U $POSTG
 echo " # Done"
 
 if [ -z "${SKIP_SSL}" ]; then
+  # TODO can we make this cert something that the local browser will actually trust?
   if [ ! -f /etc/nginx/ssl/server.crt ] && [ ! -f /etc/nginx/ssl/server.key ]; then
     openssl req -x509 -newkey rsa:4096 -nodes -keyout /etc/nginx/ssl/server.key -out /etc/nginx/ssl/server.crt -days 365 -subj "/C=US/ST=FAKE/L=FAKE/O=FAKE/OU=FAKE/CN=FAKE"
   fi
