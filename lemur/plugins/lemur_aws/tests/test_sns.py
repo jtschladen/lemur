@@ -3,6 +3,7 @@ from datetime import timedelta
 
 import arrow
 import boto3
+import random
 from moto import mock_sns, mock_sqs, mock_ses
 
 from lemur.certificates.schemas import certificate_notification_output_schema
@@ -17,6 +18,7 @@ def test_format(certificate, endpoint):
     data = [certificate_notification_output_schema.dump(certificate).data]
 
     for certificate in data:
+        notification_id = random.randrange(1000)
         expected_message = {
             "notification_type": "expiration",
             "certificate_name": certificate["name"],
@@ -25,9 +27,10 @@ def test_format(certificate, endpoint):
             "id": certificate["id"],
             "endpoints_detected": 0,
             "owner": certificate["owner"],
+            "notification_id": notification_id,
             "details": "https://lemur.example.com/#/certificates/{name}".format(name=certificate["name"])
         }
-        assert expected_message == json.loads(format_message(certificate, "expiration"))
+        assert expected_message == json.loads(format_message(certificate, "expiration", notification_id))
 
 
 @mock_sns()
@@ -49,10 +52,11 @@ def create_and_subscribe_to_topic():
 @mock_sqs()
 def test_publish(certificate, endpoint):
     data = [certificate_notification_output_schema.dump(certificate).data]
+    notification_id = random.randrange(1000)
 
     topic_arn, sqs_client, queue_url = create_and_subscribe_to_topic()
 
-    message_ids = publish(topic_arn, data, "expiration", region_name="us-east-1")
+    message_ids = publish(topic_arn, data, "expiration", notification_id, region_name="us-east-1")
     assert len(message_ids) == len(data)
     received_messages = sqs_client.receive_message(QueueUrl=queue_url)["Messages"]
 
@@ -61,7 +65,7 @@ def test_publish(certificate, endpoint):
         actual_message = next(
             (m for m in received_messages if json.loads(m["Body"])["MessageId"] == expected_message_id), None)
         actual_json = json.loads(actual_message["Body"])
-        assert actual_json["Message"] == format_message(certificate, "expiration")
+        assert actual_json["Message"] == format_message(certificate, "expiration", notification_id)
         assert actual_json["Subject"] == "Lemur: Expiration Notification"
 
 
@@ -98,7 +102,8 @@ def test_send_expiration_notification():
 
     received_messages = sqs_client.receive_message(QueueUrl=queue_url)["Messages"]
     assert len(received_messages) == 1
-    expected_message = format_message(certificate_notification_output_schema.dump(certificate).data, "expiration")
+    expected_message = format_message(certificate_notification_output_schema.dump(certificate).data,
+                                      "expiration", notification.id)
     actual_message = json.loads(received_messages[0]["Body"])["Message"]
     assert actual_message == expected_message
 

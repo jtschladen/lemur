@@ -108,7 +108,7 @@ class SlackNotificationPlugin(ExpirationNotificationPlugin):
         },
     ]
 
-    def send(self, notification_type, message, targets, options, **kwargs):
+    def send(self, notification_type, message, targets, options, notification_id, **kwargs):
         """
         A typical check can be performed using the notify command:
         `lemur notify`

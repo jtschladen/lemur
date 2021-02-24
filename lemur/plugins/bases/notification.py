@@ -17,7 +17,7 @@ class NotificationPlugin(Plugin):
 
     type = "notification"
 
-    def send(self, notification_type, message, targets, options, **kwargs):
+    def send(self, notification_type, message, targets, options, notification_id, **kwargs):
         raise NotImplementedError
 
     def get_recipients(self, options, additional_recipients):
@@ -64,5 +64,5 @@ class ExpirationNotificationPlugin(NotificationPlugin):
         """
         return self.default_options + self.additional_options
 
-    def send(self, notification_type, message, excluded_targets, options, **kwargs):
+    def send(self, notification_type, message, excluded_targets, options, notification_id, **kwargs):
         raise NotImplementedError

@@ -201,11 +201,12 @@ def send_plugin_notification(event_type, data, recipients, notification):
         "notification_plugin": notification.plugin.slug,
         "certificate_targets": recipients,
         "plugin": notification.plugin.slug,
+        "notification_id": notification.id,
     }
     status = FAILURE_METRIC_STATUS
     try:
         current_app.logger.debug(log_data)
-        notification.plugin.send(event_type, data, recipients, notification.options)
+        notification.plugin.send(event_type, data, recipients, notification.options, notification.id)
         status = SUCCESS_METRIC_STATUS
     except Exception as e:
         log_data["message"] = f"Unable to send {event_type} notification to recipients {recipients}"
@@ -330,7 +331,8 @@ def send_default_notification(notification_type, data, targets, notification_opt
     try:
         current_app.logger.debug(log_data)
         # we need the notification.options here because the email templates utilize the interval/unit info
-        notification_plugin.send(notification_type, data, targets, notification_options)
+        # notification_id is only used for SNS, so None is fine here
+        notification_plugin.send(notification_type, data, targets, notification_options, None)
         status = SUCCESS_METRIC_STATUS
     except Exception as e:
         log_data["message"] = f"Unable to send {notification_type} notification for certificate data {data} " \
@@ -455,7 +457,7 @@ def send_security_expiration_summary(exclude=None):
             interval_data = {"interval": interval, "certificates": cert_data}
             message_data.append(interval_data)
 
-        notification_plugin.send(notification_type, message_data, security_email, None)
+        notification_plugin.send(notification_type, message_data, security_email, None, None)
         status = SUCCESS_METRIC_STATUS
     except Exception:
         log_data["message"] = f"Unable to send {notification_type} notification for certificates " \

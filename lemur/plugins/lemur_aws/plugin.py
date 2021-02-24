@@ -553,7 +553,7 @@ class SNSNotificationPlugin(ExpirationNotificationPlugin):
         }
     ]
 
-    def send(self, notification_type, message, excluded_targets, options, **kwargs):
+    def send(self, notification_type, message, excluded_targets, options, notification_id, **kwargs):
         """
         While we receive a `targets` parameter here, it is unused, as the SNS topic is pre-configured in the
         plugin configuration, and can't reasonably be changed dynamically.
@@ -564,4 +564,5 @@ class SNSNotificationPlugin(ExpirationNotificationPlugin):
                     f"{self.get_option('topicName', options)}"
 
         current_app.logger.info(f"Publishing {notification_type} notification to topic {topic_arn}")
-        sns.publish(topic_arn, message, notification_type, region_name=self.get_option("region", options))
+        sns.publish(topic_arn, message, notification_type, notification_id,
+                    region_name=self.get_option("region", options))

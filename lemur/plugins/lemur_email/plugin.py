@@ -104,7 +104,7 @@ class EmailNotificationPlugin(ExpirationNotificationPlugin):
             raise InvalidConfiguration("Email sender type {0} is not recognized.")
 
     @staticmethod
-    def send(notification_type, message, targets, options, **kwargs):
+    def send(notification_type, message, targets, options, notification_id, **kwargs):
         if not targets:
             return
 
