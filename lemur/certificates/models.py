@@ -23,6 +23,7 @@ from sqlalchemy import (
     Boolean,
     Index,
 )
+from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship, backref
@@ -448,7 +449,7 @@ class CertificateAssociation(db.Model):
     )
     domain_id = Column(Integer, ForeignKey("domains.id"), primary_key=True)
     certificate_id = Column(Integer, ForeignKey("certificates.id"), primary_key=True)
-    ports = Column(Text())
+    ports = Column(postgresql.ARRAY(Integer))
     certificate = relationship(Certificate,
                                backref=backref("certificate_associations",
                                                cascade="all, delete-orphan")

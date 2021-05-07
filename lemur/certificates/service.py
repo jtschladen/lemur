@@ -984,6 +984,7 @@ def get_deployed_expiring_certificates(exclude=None, timeout_seconds_per_network
         domains_for_cert = find_domains_where_cert_is_deployed(c, timeout_seconds_per_network_call)  # network call!
         if len(domains_for_cert) > 0:
             all_certs[c] = domains_for_cert
+    database.commit()
 
     certificates = defaultdict(list)
     # group by owner
