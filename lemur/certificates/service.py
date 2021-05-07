@@ -15,6 +15,7 @@ from cryptography import x509
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes, serialization
 from flask import current_app
+from sentry_sdk import capture_exception
 from sqlalchemy import and_, func, or_, not_, cast, Integer
 from sqlalchemy.sql import text
 from sqlalchemy.sql.expression import false, true
@@ -27,7 +28,7 @@ from lemur.common.utils import generate_private_key, truthiness, parse_serial, g
 from lemur.destinations.models import Destination
 from lemur.domains.models import Domain
 from lemur.endpoints import service as endpoint_service
-from lemur.extensions import metrics, sentry, signals
+from lemur.extensions import metrics, signals
 from lemur.notifications.models import Notification
 from lemur.pending_certificates.models import PendingCertificate
 from lemur.plugins.base import plugins
@@ -411,7 +412,7 @@ def create(**kwargs):
             "cn": kwargs["common_name"],
         }
         current_app.logger.error(log_data, exc_info=True)
-        sentry.captureException()
+        capture_exception()
         raise
     kwargs["body"] = cert_body
     kwargs["private_key"] = private_key
@@ -928,7 +929,7 @@ def cleanup_after_revoke(certificate):
         except Exception as e:
             # This cleanup is the best-effort since certificate is already revoked at this point.
             # We will capture the exception and move on to the next destination
-            sentry.captureException()
+            capture_exception()
             error_message = error_message + f"Failed to remove destination: {destination.label}. {str(e)}. "
 
     database.update(certificate)
