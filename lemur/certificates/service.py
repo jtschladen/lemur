@@ -21,14 +21,13 @@ from sqlalchemy.sql.expression import false, true
 
 from lemur import database
 from lemur.authorities.models import Authority
-from lemur.certificates.models import Certificate
+from lemur.certificates.models import Certificate, CertificateAssociation
 from lemur.certificates.schemas import CertificateOutputSchema, CertificateInputSchema
 from lemur.common.utils import generate_private_key, truthiness, parse_serial, get_certificate_via_tls, windowed_query
 from lemur.destinations.models import Destination
 from lemur.domains.models import Domain
 from lemur.endpoints import service as endpoint_service
 from lemur.extensions import metrics, sentry, signals
-from lemur.models import certificate_associations
 from lemur.notifications.models import Notification
 from lemur.pending_certificates.models import PendingCertificate
 from lemur.plugins.base import plugins
@@ -580,8 +579,8 @@ def render(args):
 def like_domain_query(term):
     domain_query = database.session_query(Domain.id)
     domain_query = domain_query.filter(func.lower(Domain.name).like(term.lower()))
-    assoc_query = database.session_query(certificate_associations.c.certificate_id)
-    assoc_query = assoc_query.filter(certificate_associations.c.domain_id.in_(domain_query))
+    assoc_query = database.session_query(CertificateAssociation.c.certificate_id)  # TODO is this broken?
+    assoc_query = assoc_query.filter(CertificateAssociation.c.domain_id.in_(domain_query))
     return assoc_query
 
 
@@ -1008,7 +1007,9 @@ def find_domains_where_cert_is_deployed(certificate, timeout_seconds_per_network
     :return: A dictionary of the form {'domain1': [ports], 'domain2': [ports]}
     """
     matched_domains = defaultdict(list)
-    for domain in [d for d in certificate.domains if '*' not in d.name]:  # filter out wildcards, we can't check them
+    # filter out wildcards, we can't check them
+    for cert_association in [ca for ca in certificate.certificate_associations if '*' not in ca.domain.name]:
+        domain = cert_association.domain
         matched_ports_for_domain = []
         for port in current_app.config.get("LEMUR_PORTS_FOR_DEPLOYED_CERTIFICATE_CHECK", [443]):
             try:
@@ -1021,5 +1022,5 @@ def find_domains_where_cert_is_deployed(certificate, timeout_seconds_per_network
                                         exc_info=True)
         if len(matched_ports_for_domain) > 0:
             matched_domains[domain.name] = matched_ports_for_domain
-
+            cert_association.ports = matched_ports_for_domain
     return matched_domains

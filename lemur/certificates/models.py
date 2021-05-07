@@ -23,8 +23,9 @@ from sqlalchemy import (
     Boolean,
     Index,
 )
+from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 from sqlalchemy.sql.expression import case, extract
 from sqlalchemy_utils.types.arrow import ArrowType
 from werkzeug.utils import cached_property
@@ -36,7 +37,6 @@ from lemur.domains.models import Domain
 from lemur.extensions import metrics
 from lemur.extensions import sentry
 from lemur.models import (
-    certificate_associations,
     certificate_source_associations,
     certificate_destination_associations,
     certificate_notification_associations,
@@ -167,9 +167,7 @@ class Certificate(db.Model):
     sources = relationship(
         "Source", secondary=certificate_source_associations, backref="certificate"
     )
-    domains = relationship(
-        "Domain", secondary=certificate_associations, backref="certificate"
-    )
+    domains = association_proxy('certificate_associations', 'domain')
     roles = relationship("Role", secondary=roles_certificates, backref="certificate")
     replaces = relationship(
         "Certificate",
@@ -437,6 +435,30 @@ class Certificate(db.Model):
 
     def __repr__(self):
         return "Certificate(name={name})".format(name=self.name)
+
+
+class CertificateAssociation(db.Model):
+    __tablename__ = 'certificate_associations'
+    __table_args__ = (
+        Index(
+            "certificate_associations_ix",
+            "domain_id",
+            "certificate_id",
+        ),
+    )
+    domain_id = Column(Integer, ForeignKey("domains.id"), primary_key=True)
+    certificate_id = Column(Integer, ForeignKey("certificates.id"), primary_key=True)
+    ports = Column(Text())
+    certificate = relationship(Certificate,
+                               backref=backref("certificate_associations",
+                                               cascade="all, delete-orphan")
+                               )
+    domain = relationship("Domain")
+
+    def __init__(self, domain=None, certificate=None, ports=None):
+        self.certificate = certificate
+        self.domain = domain
+        self.ports = ports
 
 
 @event.listens_for(Certificate.destinations, "append")
