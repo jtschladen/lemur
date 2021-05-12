@@ -582,8 +582,8 @@ def render(args):
 def like_domain_query(term):
     domain_query = database.session_query(Domain.id)
     domain_query = domain_query.filter(func.lower(Domain.name).like(term.lower()))
-    assoc_query = database.session_query(CertificateAssociation.c.certificate_id)  # TODO is this broken?
-    assoc_query = assoc_query.filter(CertificateAssociation.c.domain_id.in_(domain_query))
+    assoc_query = database.session_query(CertificateAssociation.certificate_id)
+    assoc_query = assoc_query.filter(CertificateAssociation.domain_id.in_(domain_query))
     return assoc_query
 
 
