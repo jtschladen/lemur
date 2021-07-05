@@ -60,7 +60,7 @@ boto3==1.17.73
     #   -r requirements-tests.txt
     #   aws-sam-translator
     #   moto
-botocore==1.20.73
+botocore==1.20.105
     # via
     #   -r requirements-docs.in
     #   -r requirements-tests.txt
@@ -95,12 +95,6 @@ chardet==4.0.0
     # via
     #   -r requirements-tests.txt
     #   requests
-click-didyoumean==0.0.3
-    # via celery
-click-plugins==1.1.1
-    # via celery
-click-repl==0.1.6
-    # via celery
 click==7.1.2
     # via
     #   -r requirements-tests.txt
@@ -110,6 +104,12 @@ click==7.1.2
     #   click-plugins
     #   click-repl
     #   flask
+click-didyoumean==0.0.3
+    # via celery
+click-plugins==1.1.1
+    # via celery
+click-repl==0.1.6
+    # via celery
 cloudflare==2.8.15
     # via -r requirements-docs.in
 configargparse==1.4
@@ -142,10 +142,10 @@ distro==1.5.0
     # via
     #   -r requirements-tests.txt
     #   certbot
-dnspython3==1.15.0
-    # via -r requirements-docs.in
 dnspython==1.15.0
     # via dnspython3
+dnspython3==1.15.0
+    # via -r requirements-docs.in
 docker==5.0.0
     # via
     #   -r requirements-tests.txt
@@ -170,6 +170,19 @@ faker==8.1.4
     #   factory-boy
 fakeredis==1.5.0
     # via -r requirements-tests.txt
+flask==1.1.2
+    # via
+    #   -r requirements-docs.in
+    #   -r requirements-tests.txt
+    #   flask-bcrypt
+    #   flask-cors
+    #   flask-mail
+    #   flask-migrate
+    #   flask-principal
+    #   flask-restful
+    #   flask-script
+    #   flask-sqlalchemy
+    #   pytest-flask
 flask-bcrypt==0.7.1
     # via -r requirements-docs.in
 flask-cors==3.0.10
@@ -190,19 +203,6 @@ flask-sqlalchemy==2.5.1
     # via
     #   -r requirements-docs.in
     #   flask-migrate
-flask==1.1.2
-    # via
-    #   -r requirements-docs.in
-    #   -r requirements-tests.txt
-    #   flask-bcrypt
-    #   flask-cors
-    #   flask-mail
-    #   flask-migrate
-    #   flask-principal
-    #   flask-restful
-    #   flask-script
-    #   flask-sqlalchemy
-    #   pytest-flask
 freezegun==1.1.0
     # via -r requirements-tests.txt
 future==0.18.2
@@ -292,12 +292,12 @@ markupsafe==1.1.1
     #   jinja2
     #   mako
     #   moto
-marshmallow-sqlalchemy==0.23.1
-    # via -r requirements-docs.in
 marshmallow==2.20.4
     # via
     #   -r requirements-docs.in
     #   marshmallow-sqlalchemy
+marshmallow-sqlalchemy==0.23.1
+    # via -r requirements-docs.in
 more-itertools==8.7.0
     # via
     #   -r requirements-tests.txt
@@ -345,8 +345,6 @@ py==1.10.0
     # via
     #   -r requirements-tests.txt
     #   pytest
-pyasn1-modules==0.2.8
-    # via pyjks
 pyasn1==0.4.8
     # via
     #   -r requirements-tests.txt
@@ -354,6 +352,8 @@ pyasn1==0.4.8
     #   pyjks
     #   python-jose
     #   rsa
+pyasn1-modules==0.2.8
+    # via pyjks
 pycparser==2.20
     # via
     #   -r requirements-tests.txt
@@ -389,15 +389,15 @@ pyrsistent==0.17.3
     # via
     #   -r requirements-tests.txt
     #   jsonschema
-pytest-flask==1.2.0
-    # via -r requirements-tests.txt
-pytest-mock==3.6.1
-    # via -r requirements-tests.txt
 pytest==6.2.4
     # via
     #   -r requirements-tests.txt
     #   pytest-flask
     #   pytest-mock
+pytest-flask==1.2.0
+    # via -r requirements-tests.txt
+pytest-mock==3.6.1
+    # via -r requirements-tests.txt
 python-dateutil==2.8.1
     # via
     #   -r requirements-tests.txt
@@ -441,12 +441,6 @@ regex==2021.4.4
     # via
     #   -r requirements-tests.txt
     #   black
-requests-mock==1.9.2
-    # via -r requirements-tests.txt
-requests-toolbelt==0.9.1
-    # via
-    #   -r requirements-tests.txt
-    #   acme
 requests==2.25.1
     # via
     #   -r requirements-tests.txt
@@ -460,6 +454,12 @@ requests==2.25.1
     #   requests-toolbelt
     #   responses
     #   sphinx
+requests-mock==1.9.2
+    # via -r requirements-tests.txt
+requests-toolbelt==0.9.1
+    # via
+    #   -r requirements-tests.txt
+    #   acme
 responses==0.13.3
     # via
     #   -r requirements-tests.txt
@@ -515,13 +515,13 @@ sortedcontainers==2.3.0
     #   fakeredis
 soupsieve==2.2.1
     # via beautifulsoup4
-sphinx-rtd-theme==0.5.2
-    # via -r requirements-docs.in
 sphinx==3.5.4
     # via
     #   -r requirements-docs.in
     #   sphinx-rtd-theme
     #   sphinxcontrib-httpdomain
+sphinx-rtd-theme==0.5.2
+    # via -r requirements-docs.in
 sphinxcontrib-applehelp==1.0.2
     # via sphinx
 sphinxcontrib-devhelp==1.0.2
@@ -536,8 +536,6 @@ sphinxcontrib-qthelp==1.0.3
     # via sphinx
 sphinxcontrib-serializinghtml==1.1.4
     # via sphinx
-sqlalchemy-utils==0.37.3
-    # via -r requirements-docs.in
 sqlalchemy==1.3.24
     # via
     #   -r requirements-docs.in
@@ -545,6 +543,8 @@ sqlalchemy==1.3.24
     #   flask-sqlalchemy
     #   marshmallow-sqlalchemy
     #   sqlalchemy-utils
+sqlalchemy-utils==0.37.3
+    # via -r requirements-docs.in
 sshpubkeys==3.3.1
     # via
     #   -r requirements-tests.txt
