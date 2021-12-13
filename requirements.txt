@@ -4,7 +4,7 @@
 #
 #    pip-compile --no-emit-index-url --output-file=requirements.txt requirements.in
 #
-acme==1.19.0
+acme==1.22.0
     # via
     #   -r requirements.in
     #   certbot
@@ -41,7 +41,7 @@ botocore==1.21.48
     #   s3transfer
 celery[redis]==4.4.2
     # via -r requirements.in
-certbot==1.19.0
+certbot==1.22.0
     # via -r requirements.in
 certifi==2021.5.30
     # via
@@ -73,6 +73,8 @@ cryptography==3.4.8
     #   josepy
     #   paramiko
     #   pyopenssl
+decorator==5.1.0
+    # via validators
 distro==1.5.0
     # via certbot
 dnspython==1.15.0
@@ -253,6 +255,7 @@ six==1.16.0
     #   python-dateutil
     #   retrying
     #   sqlalchemy-utils
+    #   validators
 soupsieve==2.2.1
     # via beautifulsoup4
 sqlalchemy==1.3.24
