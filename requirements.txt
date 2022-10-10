@@ -133,7 +133,7 @@ future==0.18.2
     # via -r requirements.in
 gunicorn==20.1.0
     # via -r requirements.in
-hvac==0.11.2
+hvac==1.0.2
     # via -r requirements.in
 idna==3.3
     # via requests
@@ -201,6 +201,8 @@ pycparser==2.21
     # via cffi
 pycryptodomex==3.14.0
     # via pyjks
+pyhcl==0.4.4
+    # via hvac
 pyjks==20.0.0
     # via -r requirements.in
 pyjwt==2.3.0
@@ -264,7 +266,6 @@ six==1.16.0
     #   configobj
     #   flask-cors
     #   flask-restful
-    #   hvac
     #   python-dateutil
     #   retrying
     #   sqlalchemy-utils
@@ -304,16 +305,16 @@ wrapt==1.13.3
     # via deprecated
 xmltodict==0.12.0
     # via -r requirements.in
-zope.component==5.0.1
+zope-component==5.0.1
     # via certbot
-zope.event==4.5.0
-    # via zope.component
-zope.hookable==5.1.0
-    # via zope.component
-zope.interface==5.4.0
+zope-event==4.5.0
+    # via zope-component
+zope-hookable==5.1.0
+    # via zope-component
+zope-interface==5.4.0
     # via
     #   certbot
-    #   zope.component
+    #   zope-component
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
