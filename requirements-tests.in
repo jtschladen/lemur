@@ -13,7 +13,7 @@ freezegun
 itsdangerous
 jinja2
 marshmallow-sqlalchemy == 0.23.1 #related to the marshmallow issue (to avoid conflicts)
-marshmallow<2.21.1 #schema duplicate issues https://github.com/marshmallow-code/marshmallow-sqlalchemy/issues/121
+marshmallow<3.20.2 #schema duplicate issues https://github.com/marshmallow-code/marshmallow-sqlalchemy/issues/121
 moto[all] == 4.1.14 # 3.1.2 breaks ELBv2 tests
 nose
 pyflakes

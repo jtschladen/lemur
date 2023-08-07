@@ -44,7 +44,7 @@ keyring==24.2.0
     # via twine
 markdown-it-py==3.0.0
     # via rich
-marshmallow==2.21.0
+marshmallow==3.20.1
     # via
     #   -r requirements-dev.in
     #   marshmallow-sqlalchemy
@@ -60,6 +60,8 @@ nodeenv==1.8.0
     # via
     #   -r requirements-dev.in
     #   pre-commit
+packaging==23.1
+    # via marshmallow
 pkginfo==1.9.6
     # via twine
 platformdirs==3.8.0
