@@ -126,6 +126,7 @@ coverage==7.2.7
 cryptography==41.0.3
     # via
     #   -r requirements-docs.in
+    #   -r requirements-tests.txt
     #   acme
     #   certbot
     #   josepy
@@ -359,7 +360,7 @@ packaging==23.1
     #   gunicorn
     #   pytest
     #   sphinx
-paramiko==3.2.0
+paramiko==3.3.1
     # via -r requirements-docs.in
 parsedatetime==2.6
     # via
