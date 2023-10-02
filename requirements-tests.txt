@@ -307,7 +307,7 @@ typing-extensions==4.6.3
     #   alembic
     #   aws-sam-translator
     #   pydantic
-urllib3==1.26.16
+urllib3==1.26.17
     # via
     #   botocore
     #   docker

@@ -126,6 +126,7 @@ coverage==7.2.7
 cryptography==41.0.3
     # via
     #   -r requirements-docs.in
+    #   -r requirements-tests.txt
     #   acme
     #   certbot
     #   josepy
@@ -627,7 +628,7 @@ typing-extensions==4.6.3
     #   pydantic
 tzdata==2023.3
     # via celery
-urllib3==1.26.16
+urllib3==1.26.17
     # via
     #   -r requirements-tests.txt
     #   botocore
