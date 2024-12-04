@@ -38,6 +38,8 @@ def test_needs_notification(app, certificate, notification):
     delta = certificate.not_after - timedelta(days=10)
     with freeze_time(delta.datetime):
         assert needs_notification(certificate)
+        notification.active = False
+        assert not needs_notification(certificate)
 
 
 def test_get_certificates(app, certificate, notification):
