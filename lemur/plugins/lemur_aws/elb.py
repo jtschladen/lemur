@@ -7,12 +7,11 @@
 """
 import botocore
 from flask import current_app
-
 from retrying import retry
 from sentry_sdk import capture_exception
 
-from lemur.extensions import metrics
 from lemur.exceptions import InvalidListener
+from lemur.extensions import metrics
 from lemur.plugins.lemur_aws.sts import sts_client
 
 
@@ -437,6 +436,8 @@ def attach_certificate_v2(listener_arn, port, certificates, **kwargs):
     except botocore.exceptions.ClientError as e:
         if e.response["Error"]["Code"] == "LoadBalancerNotFound":
             current_app.logger.warning("Loadbalancer does not exist.")
+        elif e.response["Error"]["Code"] == "CertificateNotFound":
+            raise Exception(f"Certificate not found for listener arn {listener_arn}: {e}")
         else:
             raise e
 
