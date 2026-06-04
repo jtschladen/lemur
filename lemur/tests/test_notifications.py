@@ -202,3 +202,24 @@ def test_notification_create_read_only_forbidden(client, notification_plugin):
         headers=VALID_READ_ONLY_HEADER_TOKEN,
     )
     assert resp.status_code == 403
+
+
+def test_notification_update_read_only_forbidden(client, notification_plugin, notification):
+    """Read-only users must be denied write access (GHSA-qcqw-jwxc-2hqg)."""
+    import json
+    data = json.dumps({
+        "label": "ro-update-notification",
+        "description": "test",
+        "active": True,
+        "plugin": {
+            "slug": "test-notification",
+            "plugin_options": [],
+        },
+        "certificates": [],
+    })
+    resp = client.put(
+        api.url_for(Notifications, notification_id=notification.id),
+        data=data,
+        headers=VALID_READ_ONLY_HEADER_TOKEN,
+    )
+    assert resp.status_code == 403

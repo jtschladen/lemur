@@ -7,6 +7,7 @@ from lemur.tests.factories import AuthorityFactory, RoleFactory
 from lemur.tests.vectors import (
     VALID_ADMIN_API_TOKEN,
     VALID_ADMIN_HEADER_TOKEN,
+    VALID_READ_ONLY_HEADER_TOKEN,
     VALID_USER_HEADER_TOKEN,
 )
 
@@ -440,3 +441,13 @@ def test_authorities_put_update_options(client, authority_number, token, status)
     )
     for field in ['owner', 'description', 'options']:
         assert 'updated' in json.dumps(response[field])
+
+
+def test_authority_update_read_only_forbidden(client):
+    """Read-only users must be denied write access (GHSA-qcqw-jwxc-2hqg)."""
+    resp = client.put(
+        api.url_for(Authorities, authority_id=1),
+        data=json.dumps({"owner": "test@example.com"}),
+        headers=VALID_READ_ONLY_HEADER_TOKEN,
+    )
+    assert resp.status_code == 403

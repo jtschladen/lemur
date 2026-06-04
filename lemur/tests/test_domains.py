@@ -6,6 +6,7 @@ from lemur.domains.views import *  # noqa
 from .vectors import (
     VALID_ADMIN_API_TOKEN,
     VALID_ADMIN_HEADER_TOKEN,
+    VALID_READ_ONLY_HEADER_TOKEN,
     VALID_USER_HEADER_TOKEN,
 )
 
@@ -152,3 +153,25 @@ def test_domain_list_patch(client, token, status):
         client.patch(api.url_for(DomainsList), data={}, headers=token).status_code
         == status
     )
+
+
+def test_domain_create_read_only_forbidden(client):
+    """Read-only users must be denied write access (GHSA-qcqw-jwxc-2hqg)."""
+    import json
+    resp = client.post(
+        api.url_for(DomainsList),
+        data=json.dumps({"name": "example.com", "sensitive": False}),
+        headers=VALID_READ_ONLY_HEADER_TOKEN,
+    )
+    assert resp.status_code == 403
+
+
+def test_domain_update_read_only_forbidden(client):
+    """Read-only users must be denied write access (GHSA-qcqw-jwxc-2hqg)."""
+    import json
+    resp = client.put(
+        api.url_for(Domains, domain_id=1),
+        data=json.dumps({"name": "example.com", "sensitive": False}),
+        headers=VALID_READ_ONLY_HEADER_TOKEN,
+    )
+    assert resp.status_code == 403

@@ -24,16 +24,17 @@ from lemur.domains.models import Domain
 from lemur.tests.factories import DestinationFactory, DuplicateAllowedDestinationFactory
 from lemur.tests.test_messaging import create_cert_that_expires_in_days
 from lemur.tests.vectors import (
-    VALID_ADMIN_API_TOKEN,
-    VALID_ADMIN_HEADER_TOKEN,
-    VALID_USER_HEADER_TOKEN,
     CSR_STR,
     INTERMEDIATE_CERT_STR,
-    SAN_CERT_STR,
+    ROOTCA_CERT_STR,
+    ROOTCA_KEY,
     SAN_CERT_CSR,
     SAN_CERT_KEY,
-    ROOTCA_KEY,
-    ROOTCA_CERT_STR,
+    SAN_CERT_STR,
+    VALID_ADMIN_API_TOKEN,
+    VALID_ADMIN_HEADER_TOKEN,
+    VALID_READ_ONLY_HEADER_TOKEN,
+    VALID_USER_HEADER_TOKEN,
 )
 
 
@@ -2119,3 +2120,14 @@ def test_certificate_update_duplicate_destinations_allowed(client, crypto_author
     assert len(resp_cert['destinations']) == 2
     assert destination_output_schema.dump(destination1).data in resp_cert['destinations']
     assert destination_output_schema.dump(destination2).data in resp_cert['destinations']
+
+
+def test_certificate_upload_read_only_forbidden(client):
+    """Read-only users must be denied write access (GHSA-qcqw-jwxc-2hqg)."""
+    import json
+    resp = client.post(
+        api.url_for(CertificatesUpload),
+        data=json.dumps({"owner": "test@example.com", "body": SAN_CERT_STR}),
+        headers=VALID_READ_ONLY_HEADER_TOKEN,
+    )
+    assert resp.status_code == 403

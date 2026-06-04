@@ -9,6 +9,7 @@ from .vectors import (
     INTERMEDIATE_CERT_STR,
     VALID_ADMIN_API_TOKEN,
     VALID_ADMIN_HEADER_TOKEN,
+    VALID_READ_ONLY_HEADER_TOKEN,
     VALID_USER_HEADER_TOKEN,
     WILDCARD_CERT_STR,
 )
@@ -115,3 +116,14 @@ def test_invalid_pending_upload_with_chain(pending_certificate_from_partial_chai
     assert str(err.value).startswith(
         "Incorrect chain certificate(s) provided: '*.wild.example.org' is not signed by 'LemurTrust Unittests Root CA 2018"
     )
+
+
+def test_pending_certificate_upload_read_only_forbidden(client, pending_certificate):
+    """Read-only users must be denied write access (GHSA-qcqw-jwxc-2hqg)."""
+    import json
+    resp = client.post(
+        api.url_for(PendingCertificatesUpload, pending_certificate_id=pending_certificate.id),
+        data=json.dumps({"body": WILDCARD_CERT_STR}),
+        headers=VALID_READ_ONLY_HEADER_TOKEN,
+    )
+    assert resp.status_code == 403
